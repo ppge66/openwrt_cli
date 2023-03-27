@@ -165,7 +165,7 @@ jobs:
         echo "::set-output name=status::success"
 
     - name: Upload firmware to release
-      id: uploadFirmware
+      id: upware
       uses: softprops/action-gh-release@v1
       if: steps.tag.outputs.status == 'success' && !cancelled()
       env:
@@ -177,7 +177,7 @@ jobs:
 
     - name: send telegram message
       uses: appleboy/telegram-action@master
-      id: steps.uploadFirmware.outputs.status == 'success' && !cancelled()
+      id: steps.upware.outputs.status == 'success' && !cancelled()
       with:
         to: ${{ secrets.TELEGRAM_CHAT_ID }}
         token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
