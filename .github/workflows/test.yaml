@@ -21,13 +21,13 @@ jobs:
       # - name: Checkout
       #   uses: actions/checkout@main
       - name: send message file
-      - uses: appleboy/telegram-action@master
+        uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.TELEGRAM_CHAT_ID }}
           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           message_file: tests/message.txt
 
-          
+
 # name: telegram message
 # on:
 #   workflow_dispatch:
