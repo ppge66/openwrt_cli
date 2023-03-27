@@ -21,7 +21,7 @@ jobs:
     - name: send message file
       uses: ./
       with:
-        to: ${{ secrets.TELEGRAM_TO }}
-        token: ${{ secrets.TELEGRAM_TOKEN }}
+        to: ${{ secrets.TELEGRAM_CHAT_ID }}
+        token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         message_file: tests/message.txt
 
