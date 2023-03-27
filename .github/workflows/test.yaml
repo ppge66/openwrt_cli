@@ -9,22 +9,41 @@
 #       - name: Setup Debug Session
 #         uses: csexton/debugger-action@master
 
+# name: telegram message
+# on:
+#   workflow_dispatch:
+# jobs:
+#   build:
+#     name: Build
+#     runs-on: ubuntu-latest
+#     steps:
+#       # - uses: actions/checkout@master
+#       - name: Checkout
+#         uses: actions/checkout@main
+
+#       - name: send message file
+#       - uses: appleboy/telegram-action@master
+#         with:
+#           to: ${{ secrets.TELEGRAM_CHAT_ID }}
+#           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+#           message_file: tests/message.txt
 name: telegram message
-on:
-  workflow_dispatch:
+on: [push]
 jobs:
+
   build:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      # - uses: actions/checkout@master
-      - name: Checkout
-        uses: actions/checkout@main
-
-      - name: send message file
-      - uses: appleboy/telegram-action@master
+      - name: send telegram message on push
+        uses: appleboy/telegram-action@master
         with:
-          to: ${{ secrets.TELEGRAM_CHAT_ID }}
-          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          message_file: tests/message.txt
-
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            ${{ github.actor }} created commit:
+            Commit message: ${{ github.event.commits[0].message }}
+            
+            Repository: ${{ github.repository }}
+            
+            See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
