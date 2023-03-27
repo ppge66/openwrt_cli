@@ -20,7 +20,6 @@ jobs:
     # - uses: actions/checkout@master
     - uses: appleboy/telegram-action@master
     - name: send message file
-      uses: ./
       with:
         to: ${{ secrets.TELEGRAM_CHAT_ID }}
         token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
