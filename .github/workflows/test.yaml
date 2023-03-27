@@ -1,10 +1,27 @@
-name: debugger-action
+# name: debugger-action
+# on:
+#   workflow_dispatch:
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v2
+#       - name: Setup Debug Session
+#         uses: csexton/debugger-action@master
+
+name: telegram message
 on:
   workflow_dispatch:
 jobs:
   build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Setup Debug Session
-        uses: csexton/debugger-action@master
+    - uses: actions/checkout@master
+    - name: send message file
+      uses: ./
+      with:
+        to: ${{ secrets.TELEGRAM_TO }}
+        token: ${{ secrets.TELEGRAM_TOKEN }}
+        message_file: tests/message.txt
+
