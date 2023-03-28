@@ -42,7 +42,6 @@ jobs:
         uses: actions/checkout@main
 
       - name: Initialization environment
-        id: Initialization
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
@@ -58,7 +57,6 @@ jobs:
 
       - name: Clone source code
         working-directory: /workdir
-        if: ${{ steps.Initialization.outputs.INITIALIZATION_STATUS}}== 'SUCCESS'
         run: |
           df -hT $PWD
           git clone $REPO_URL -b $REPO_BRANCH openwrt
@@ -118,7 +116,7 @@ jobs:
 
       - name: Upload bin directory
         uses: actions/upload-artifact@main
-        if: steps.compile.outputs.COMPILE_STATUS == 'success' && env.UPLOAD_BIN_DIR == 'true'
+        if: ${{steps.compile.outputs.COMPILE_STATUS}} == 'success' && env.UPLOAD_BIN_DIR == 'true'
         with:
           name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
           path: openwrt/bin
@@ -134,14 +132,14 @@ jobs:
 
       - name: Upload firmware directory
         uses: actions/upload-artifact@main
-        if: steps.organize.outputs.ORGANIZE_STATUS == 'success' && !cancelled()
+        if: ${{steps.organize.outputs.ORGANIZE_STATUS}} == 'success' && !cancelled()
         with:
           name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
           path: ${{ env.FIRMWARE }}
 
       - name: Upload firmware to cowtransfer
         id: cowtransfer
-        if: steps.organize.outputs.ORGANIZE_STATUS == 'success' && env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
+        if: ${{steps.organize.outputs.ORGANIZE_STATUS}} == 'success' && env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
         run: |
           curl -fsSL git.io/file-transfer | sh
           ./transfer cow --block 2621440 -s -p 64 --no-progress ${FIRMWARE} 2>&1 | tee cowtransfer.log
@@ -150,7 +148,7 @@ jobs:
 
       - name: Upload firmware to WeTransfer
         id: wetransfer
-        if: steps.organize.outputs.ORGANIZE_STATUS == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()
+        if: ${{steps.organize.outputs.ORGANIZE_STATUS}} == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()
         run: |
           curl -fsSL git.io/file-transfer | sh
           ./transfer wet -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wetransfer.log
@@ -170,19 +168,16 @@ jobs:
       - name: Upload firmware to release
         id: upware
         uses: softprops/action-gh-release@v1
-        if: steps.tag.outputs.RELEASE_STATUS == 'success' && !cancelled()
+        if: ${{steps.tag.outputs.RELEASE_STATUS}} == 'success' && !cancelled()
         env:
           GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
         with:
           tag_name: ${{ steps.tag.outputs.RELEASE_TAG_STATUS }}
           body_path: release.txt
           files: ${{ env.FIRMWARE }}/*
-        # run: |
-        #   echo "UPWARE_STATUS=success" >> $GITHUB_OUTPUT
 
       - name: send telegram message
         uses: appleboy/telegram-action@master
-        if: steps.upware.outputs.UPWARE_STATUS == 'success' && !cancelled()
         with:
           to: ${{ secrets.TELEGRAM_CHAT_ID }}
           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
